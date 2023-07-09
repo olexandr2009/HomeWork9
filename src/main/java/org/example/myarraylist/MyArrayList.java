@@ -33,20 +33,16 @@ public class MyArrayList<T> implements Iterable<T> {
     }
 
     public void add(T value) {
-        if (value == null){
-            throw new NullPointerException();
-        }
-        try {
-            add((T) value, arrayList, currentSize);
-        }catch (ClassCastException cce){
-            cce.printStackTrace();
-        }
+            add(value, arrayList, currentSize);
     }
     public void remove(int index){
+        isIndexExist(index);
+
         final Object[] newArrayList = arrayList;
-        final int newSize;
-        if ((newSize = currentSize - 1) > index)
+        final int newSize = currentSize -1;
+        if (newSize > index){
             System.arraycopy(newArrayList, index + 1, newArrayList, index, newSize - index);
+        }
         newArrayList[currentSize = newSize] = null;
     }
     public void clear(){
@@ -56,7 +52,13 @@ public class MyArrayList<T> implements Iterable<T> {
         return currentSize;
     }
     public T get(int index){
+        isIndexExist(index);
         return (T) arrayList[index];
+    }
+    private void isIndexExist(int index){
+        if (index >= currentSize){
+            throw new IndexOutOfBoundsException();
+        }
     }
 
     @Override

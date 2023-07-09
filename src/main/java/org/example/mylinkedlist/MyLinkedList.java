@@ -1,7 +1,7 @@
 package org.example.mylinkedlist;
 
 import java.util.Iterator;
-import java.util.LinkedList;
+
 
 
 public class MyLinkedList<T> implements Iterable<T> {
@@ -15,8 +15,8 @@ public class MyLinkedList<T> implements Iterable<T> {
 //    get(int index) повертає елемент за індексом
 
 
-    public void add(Object value) {
-        Node<T> node =  new Node<>((T) value, null,null);
+    public void add(T value) {
+        Node<T> node =  new Node<>(value,null,null);
         if (head == null){
             head = node;
             tail = node;
@@ -29,13 +29,12 @@ public class MyLinkedList<T> implements Iterable<T> {
         size++;
     }
     public void remove(int index){
-        if (index >= size){
-            throw new IndexOutOfBoundsException();
-        }
+        isIndexExist(index);
         unlinck(getNode(index));
         size--;
     }
     private Node<T> getNode(int index){
+        isIndexExist(index);
         ListIterator<T> iterator = (ListIterator<T>) iterator();
         int i = 0;
         while (iterator.hasNext()){
@@ -78,6 +77,7 @@ public class MyLinkedList<T> implements Iterable<T> {
     }
 
     public T get(int index){
+        isIndexExist(index);
         ListIterator<T> iterator = (ListIterator<T>) iterator();
             int i = 0;
         while (iterator.hasNext()){
@@ -88,6 +88,12 @@ public class MyLinkedList<T> implements Iterable<T> {
             i++;
         }
         return null;
+    }
+
+    private void isIndexExist(int index) {
+        if (index >= size){
+            throw new IndexOutOfBoundsException();
+        }
     }
 
     // return Head

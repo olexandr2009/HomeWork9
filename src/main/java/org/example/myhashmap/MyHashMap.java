@@ -1,153 +1,109 @@
 package org.example.myhashmap;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
 public class MyHashMap<K, V> {
-//    put(Object key, Object value) додає пару ключ + значення
-//    remove(Object key) видаляє пару за ключем
-//    clear() очищає колекцію
-//    size() повертає розмір колекції
-//    get(Object key) повертає значення (Object value) за ключем
-    private int size;
-    private Node<K,V> first;
+    private int capacity = 16;
+
+    private Node<K, V>[] tableHeads;
 
     public MyHashMap(){
-        first = null;
-        size = 0;
+        tableHeads = new Node[capacity];
     }
-    public void put(K key,V value){
-        Node<K, V> last = new Node<>(null,key,value);
-        if (size == 0){
-            first = last;
-        }else if (containsKey(key)){
-            getNode(key).value = value;
-        }else {
 
-            Node<K, V> current = first;
-            while (true){
-                if (current.next == null){
-                    current.next = last;
-                    return;
-                }else {
-                    current = current.next;
+    public MyHashMap(int capacity){
+        this.capacity = capacity;
+        tableHeads = new Node[capacity];
+    }
+    public void put(K key, V value) {
+        int index = index(key);
+        Node<K, V> newNode = new Node(key, value, null);
+        if (tableHeads[index] == null) {
+            tableHeads[index] = newNode;
+        } else {
+            Node<K, V> previousNode = null;
+            Node<K, V> currentNode = tableHeads[index];
+            while (currentNode != null) {
+                if (currentNode.getKey().equals(key)) {
+                    currentNode.setValue(value);
+                    break;
                 }
+                previousNode = currentNode;
+                currentNode = currentNode.getNext();
             }
-
+            if (previousNode != null)
+                previousNode.setNext(newNode);
         }
-        size++;
-    }
-    public void remove(K key){
-        if (!containsKey(key)){
-            return;
-        }
-        Node<K, V> toRemove = getNode(key);
-        Node<K, V> current = first;
-        if (toRemove == first){
-            first = first.next;
-        }
-
-        if (current.next == toRemove){
-            current.next = toRemove.next;
-            return;
-        }
-        while (true){
-            if (current.next == null){
-                return;
-            }
-            if (current.next == toRemove){
-                current.next = toRemove.next;
-                size--;
-                return;
-            }else {
-                current = current.next;
-            }
-        }
-    }
-    public void clear(){
-        first = null;
-        size = 0;
-    }
-    public int size(){
-        return size;
     }
     public V get(K key){
-        Node<K,V> e = getNode(key);
-        if (e == null){
-            throw new IllegalArgumentException();
+        V value = null;
+        int index = index(key);
+        Node<K, V> node = tableHeads[index];
+        while (node != null){
+            if(node.getKey().equals(key)) {
+                value = node.getValue();
+                break;
+            }
+            node = node.getNext();
         }
-        return e.value;
+        return value;
     }
-    public boolean containsKey(K key){
-        if (key == null) {
-            return false;
-        }
-        Node<K, V> current = first;
-        while (true){
-            if (current.hash == Objects.hash(key) && current.key.equals(key)){
-                return true;
+    public void remove(K key){
+        int index = index(key);
+        Node<K, V> previous = null;
+        Node<K, V> node = tableHeads[index];
+        while (node != null){
+            if(node.getKey().equals(key)){
+                if(previous == null){
+                    node = node.getNext();
+                    tableHeads[index] = node;
+                    return;
+                }else {
+                    previous.setNext(node.getNext());
+                    return;
+                }
             }
-                current = current.next;
-            if (current == null){
-                return false;
-            }
-        }
-    }
-
-    private Node<K,V> getNode(K key){
-        if (!containsKey(key)){
-         return null;
-        }
-        Node<K, V> current = first;
-        while (true){
-            if (current.hash == Objects.hash(key) && current.key.equals(key)){
-                return current;
-            }
-            try{
-                current = current.next;
-            }catch (NullPointerException npe){
-                return null;
-            }
+            previous = node;
+            node = node.getNext();
         }
     }
 
-    static class Node<K, V>{
-        Node<K, V> next;
-        final int hash;
-         final K key;
-         V value;
+    private int index(K key) {
+            if(key == null){
+                return 0;
+            }
+            return Math.abs(key.hashCode() % capacity);
+        }
+    }
 
-        public Node(Node next, K key, V value) {
-            this.next = next;
+
+    class Node<K, V> {
+
+        private K key;
+        private V value;
+        private Node<K, V> next;
+
+        public Node(K key, V value, Node<K, V> next){
             this.key = key;
             this.value = value;
-            this.hash = hashcode();
-        }
-        public K getKey(){
-            return key;
-        }
-        public V getValue(){
-            return value;
-        }
-        @Override
-        public String toString() {
-            return key + " = " + value;
+            this.next = next;
         }
 
-        public int hashcode(){
-            return Objects.hash(key);
+        public K getKey() {
+            return key;
         }
-        @Override
-        public final boolean equals(Object o) {
-            if (o == this)
-                return true;
-            if (o instanceof Node) {
-                Node<?,?> e = (Node<?,?>)o;
-                if (Objects.equals(key, e.getKey()))
-                    return true;
-            }
-            return false;
+
+        public V getValue() {
+            return value;
         }
-    }
+
+        public void setValue(V value) {
+            this.value = value;
+        }
+
+        public Node getNext() {
+            return next;
+        }
+
+        public void setNext(Node<K, V> next) {
+            this.next = next;
+        }
 }

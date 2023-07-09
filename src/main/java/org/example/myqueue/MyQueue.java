@@ -26,23 +26,15 @@ public class MyQueue<T> implements Iterable<T>{
     }
 
     private void add(T e, Object[] elementData, int size) {
-        if (size == elementData.length)
-            arrayList = Arrays.copyOf(elementData,elementData.length+1);;
+        if (size == elementData.length){
+            arrayList = Arrays.copyOf(elementData,elementData.length+1);
+        }
         arrayList[size] = e;
         currentSize = size + 1;
     }
 
     public void add(T value) {
-        if (value == null){
-            throw new NullPointerException();
-        }
-        try {
             add(value, arrayList, currentSize);
-            ;
-        }catch (ClassCastException cce){
-            cce.printStackTrace();
-            throw new IllegalArgumentException();
-        }
     }
     public T poll(){
         if (arrayList.length==0){

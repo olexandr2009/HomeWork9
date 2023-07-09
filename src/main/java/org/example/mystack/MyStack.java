@@ -3,7 +3,8 @@ package org.example.mystack;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class MyStack<T> implements Iterable {    private static final Object[] EMPTY_ELEMENT_DATA = {};
+public class MyStack<T> implements Iterable {
+    private static final Object[] EMPTY_ELEMENT_DATA = {};
     private Object[] arrayList;
     private int first = -1;
 
@@ -26,16 +27,8 @@ public class MyStack<T> implements Iterable {    private static final Object[] E
     }
 
     public void add(T value) {
-        if (value == null){
-            throw new NullPointerException();
-        }
-        try {
             add(value, arrayList, currentSize);
             first++;
-        }catch (ClassCastException cce){
-            cce.printStackTrace();
-            throw new IllegalArgumentException();
-        }
     }
     public T poll(){
         T temp = (T) arrayList[first];
@@ -58,16 +51,16 @@ public class MyStack<T> implements Iterable {    private static final Object[] E
     public Iterator<T> iterator() {
         return  new Iterator<T>() {
 
-            private int currentIndex = 0;
+            private int currentIndex = currentSize - 1;
 
             @Override
             public boolean hasNext() {
-                return currentIndex < currentSize && arrayList[currentIndex] != null;
+                return currentIndex >= 0;
             }
 
             @Override
             public T next() {
-                return (T) arrayList[currentIndex++];
+                return (T) arrayList[currentIndex--];
             }
         };
     }
